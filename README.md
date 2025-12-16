@@ -1,114 +1,119 @@
 #include <stdio.h>
-#include <conio.h>
 #include <windows.h>
-#include <string.h>
+#include <conio.h>
 
-typedef struct {
-    int chastota;
-    int dlitelnost;
-} Note;
-
-void playHappyNewYear() {
-    Note melody[] =
-    {
-        {392, 500}, 
-        {392, 500}, 
-        {440, 1000},
-
-        {392, 500}, 
-        {523, 500}, 
-        {494, 1000},
-
-        {392, 500},
-        {392, 500},
-        {440, 500},
-        {392, 500},
-        {587, 500},
-        {523, 1000},
-
-        {784, 500},
-        {659, 500},
-        {523, 500}, 
-        {494, 500}, 
-        {440, 1000},
-
-        {698, 500}, 
-        {698, 500}, 
-        {659, 500},
-        {523, 500},
-        {587, 500},
-        {523, 1000}
-    };
-
-    int notesCount = sizeof(melody) / sizeof(melody[0]);
-
-    printf("\nplay 'Happy New Year'...\n");
-
-    for (int i = 0; i < notesCount; i++) {
-        Beep(melody[i].chastota, melody[i].dlitelnost);
-        Sleep(0);
-    }
-
-    printf("music is end\n");
-}
-const char* getNoteName(int chastota) {
-    switch (chastota) {
-    case 262: return "do";
-    case 294: return "re";
-    case 330: return "mi";
-    case 349: return "fa";
-    case 392: return "sol'";
-    case 440: return "lya";
-    case 494: return "si";
-    case 523: return "do (up)";
-    case 587: return "re (up)";
-    case 659: return "mi (up)";
-    case 698: return "fa (up)";
-    case 784: return "sol' (up)";
-    default: return "nota ne naydena";
-    }
-}
-
-int main() {
+void pianoMode() {
     char key;
-    printf("console fortepiano\n");
-    printf("a-s-d-f-g-h-j: ноты do-re-mi-fa-sol'-lya-si\n");
-    printf("p: play 'Happy New Year'\n");
-    printf("q: exit\n");
-    printf("===========================\n");
+
+    printf("\n==========================================\n");
+    printf("          pianino                       ||\n");
+    printf("==========================================\n");
+    printf("Klavishi:                               ||\n");                          
+    printf("  a: do (262 Hz)      s: re (294 Hz)    ||\n");
+    printf("  d: mi (330 Hz)      f: fa (349 Hz)    ||\n");
+    printf("  g: sol' (392 Hz)    h: lya (440 Hz)   ||\n");
+    printf("  j: si (494 Hz)      k: do (523 Hz(up) ||\n");
+    printf("------------------------------------------\n");
+    printf("  q: vuhod                              ||\n");
+    printf("==========================================\n\n");
 
     while (1) {
         if (_kbhit()) {
             key = _getch();
 
             if (key == 'q') {
-                printf("\nexit\n");
+                printf("vuhod\n");
                 break;
             }
 
-            if (key == 'p') {
-                playHappyNewYear();
+            int chastota = 0;
+            const char* imyanotu = "";
+
+            switch (key) {
+            case 'a': chastota = 262; imyanotu = "do"; break;
+            case 's': chastota = 294; imyanotu = "re"; break;
+            case 'd': chastota = 330; imyanotu = "mi"; break;
+            case 'f': chastota = 349; imyanotu = "fa"; break;
+            case 'g': chastota = 392; imyanotu = "sol'"; break;
+            case 'h': chastota = 440; imyanotu = "lya"; break;
+            case 'j': chastota = 494; imyanotu = "si"; break;
+            case 'k': chastota = 523; imyanotu = "do (up)"; break;
+            default:
+                printf("");
                 continue;
             }
 
-            int chastota = 0;
-            const char* noteName = "";
+            printf("play: %s (%d Hz)\n", imyanotu, chastota);
+            Beep(chastota, 500);
+        }
+    }
+}
+void playProgression() {
+    int temp = 750;
+    int notu[] = {
+        466,
+        554,
+        698,
 
-            switch (key) {
-            case 'a': chastota = 262; break;
-            case 's': chastota = 294; break;
-            case 'd': chastota = 330; break;
-            case 'f': chastota = 349; break;
-            case 'g': chastota = 392; break;
-            case 'h': chastota = 440; break;
-            case 'j': chastota = 494; break;
-            default: continue;
-            }
+        370,
+        466,
+        554,
 
-            noteName = getNoteName(chastota);
-            printf("igrayu notu: %s (s chastotoy: %d Hz)\n", noteName, chastota);
+        311,
+        370,
+        466,
+    };
 
-            Beep(chastota, 150);
+    int schetnot = sizeof(notu) / sizeof(notu[0]);
+
+    for (int repeat = 0; repeat < 4; repeat++) {
+        printf("povtor %d:\n", repeat + 1);
+
+        for (int i = 0; i < schetnot; i += 3) {
+            if (i == 0) printf("  Bbm: ");
+            else if (i == 3) printf("  Gb: ");
+            else if (i == 6) printf("  Ebm: ");
+
+            Beep(notu[i], temp / 2);
+            Beep(notu[i + 1], temp / 2);
+            Beep(notu[i + 2], temp);
+
+            printf("✓\n");
+            Sleep(100);
+        }
+        printf("\n");
+    }
+}
+int main() {
+    char vubor;
+    while (1) {
+        printf("\nmain menu:\n");
+        printf("  1 - piano\n");
+        printf("  2 - music\n");
+        printf("  q - exit\n");
+        printf("  k - i dont know what is the music\n");
+
+        vubor = getchar();
+        while (getchar() != '\n');
+
+        switch (vubor) {
+        case '1':
+            pianoMode();
+            break;
+
+        case '2':
+            playProgression();
+            break;
+
+        case 'q':
+            return 0;
+
+        case 'k':
+            printf("Ne znaesh chto za pesnya? eto je: 42 bratyha by 5opka\n");
+            break;
+
+        default:
+            printf("\n");
         }
     }
     return 0;
